@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NStarX Platform Documentation</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #ffffff;
+            color: #1a1a1a;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #5B21B6 0%, #7C3AED 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #6B7280;
+            margin-bottom: 2rem;
+        }
+
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .toggle-button {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #E5E7EB;
+            background: white;
+            color: #374151;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-button.active {
+            background: #7C3AED;
+            color: white;
+            border-color: #7C3AED;
+        }
+
+        .toggle-button:hover:not(.active) {
+            border-color: #7C3AED;
+            color: #7C3AED;
+        }
+
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            position: relative;
+            animation: fadeIn 1s ease-out 0.2s both;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 3rem 1rem 1.5rem;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            background: #F9FAFB;
+            color: #1a1a1a;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #7C3AED;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+            background: white;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9CA3AF;
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+        }
+
+        /* Tree View Styles */
+        .tree-view {
+            display: none;
+        }
+
+        .tree-view.active {
+            display: block;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .tree-container {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .persona-section {
+            background: #F9FAFB;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid #E5E7EB;
+            transition: all 0.3s ease;
+        }
+
+        .persona-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-color: #7C3AED;
+        }
+
+        .persona-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+        }
+
+        .persona-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+
+        .data-science { background: linear-gradient(135deg, #8B5CF6, #7C3AED); }
+        .operations { background: linear-gradient(135deg, #EC4899, #BE185D); }
+        .business { background: linear-gradient(135deg, #3B82F6, #1D4ED8); }
+        .administrative { background: linear-gradient(135deg, #F59E0B, #D97706); }
+
+        .persona-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1F2937;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .feature-card {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #7C3AED, #8B5CF6);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-color: #7C3AED;
+        }
+
+        .feature-card:hover::before {
+            transform: translateX(0);
+        }
+
+        .feature-name {
+            font-weight: 600;
+            color: #1F2937;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .feature-description {
+            color: #6B7280;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* Diagram View Styles */
+        .diagram-view {
+            display: none;
+            background: #F9FAFB;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid #E5E7EB;
+            overflow-x: auto;
+        }
+
+        .diagram-view.active {
+            display: block;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        svg {
+            width: 100%;
+            height: 800px;
+            min-width: 1200px;
+        }
+
+        .node {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .node:hover circle {
+            r: 35;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+        }
+
+        .node text {
+            font-size: 12px;
+            pointer-events: none;
+            text-anchor: middle;
+            fill: #374151;
+        }
+
+        .link {
+            fill: none;
+            stroke: #E5E7EB;
+            stroke-width: 2;
+            transition: all 0.3s ease;
+        }
+
+        .link:hover {
+            stroke: #7C3AED;
+            stroke-width: 3;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 90%;
+            width: 1000px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            border: 1px solid #E5E7EB;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #E5E7EB;
+            padding-bottom: 1rem;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #1F2937;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            color: #6B7280;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+
+        .close-button:hover {
+            color: #1F2937;
+            background: #F3F4F6;
+        }
+
+        .markdown-content {
+            color: #374151;
+            line-height: 1.8;
+        }
+
+        .markdown-content h1, .markdown-content h2, .markdown-content h3 {
+            color: #1F2937;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .markdown-content h1 {
+            font-size: 2rem;
+            border-bottom: 2px solid #E5E7EB;
+            padding-bottom: 0.5rem;
+        }
+
+        .markdown-content h2 {
+            font-size: 1.5rem;
+        }
+
+        .markdown-content h3 {
+            font-size: 1.25rem;
+        }
+
+        .markdown-content code {
+            background: #F3F4F6;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+
+        .markdown-content pre {
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .markdown-content ul, .markdown-content ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .markdown-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .markdown-content blockquote {
+            border-left: 4px solid #7C3AED;
+            padding-left: 1rem;
+            margin: 1rem 0;
+            color: #6B7280;
+            font-style: italic;
+        }
+
+        .markdown-content a {
+            color: #7C3AED;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.3s ease;
+        }
+
+        .markdown-content a:hover {
+            border-bottom-color: #7C3AED;
+        }
+
+        .markdown-content table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        .markdown-content th, .markdown-content td {
+            border: 1px solid #E5E7EB;
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        .markdown-content th {
+            background: #F9FAFB;
+            font-weight: 600;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 3rem 0;
+            animation: fadeIn 1s ease-out 0.6s both;
+        }
+
+        .stat-card {
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: #7C3AED;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #7C3AED, #8B5CF6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: #6B7280;
+            margin-top: 0.5rem;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>NStarX Platform Documentation</h1>
+            <p class="subtitle">Enterprise AI Platform - Complete Feature Documentation</p>
+        </header>
+
+        <div class="view-toggle">
+            <button class="toggle-button active" onclick="toggleView('tree')">Tree View</button>
+            <button class="toggle-button" onclick="toggleView('diagram')">Diagram View</button>
+        </div>
+
+        <div class="search-container">
+            <input type="text" class="search-input" id="searchInput" placeholder="Search documentation...">
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+            </svg>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-number">21</div>
+                <div class="stat-label">Total Features</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">4</div>
+                <div class="stat-label">User Personas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">7</div>
+                <div class="stat-label">Data Science Tools</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Documentation Coverage</div>
+            </div>
+        </div>
+
+        <div class="tree-view active" id="treeView">
+            <div class="tree-container">
+                <div class="persona-section" data-persona="data-science">
+                    <div class="persona-header">
+                        <div class="persona-icon data-science">🧪</div>
+                        <h2 class="persona-title">Data Science Persona</h2>
+                    </div>
+                    <div class="feature-grid">
+                        <div class="feature-card" data-file="ai-catalog.md">
+                            <div class="feature-name">AI Catalog</div>
+                            <div class="feature-description">Centralized AI asset repository and marketplace</div>
+                        </div>
+                        <div class="feature-card" data-file="ai-catalog-artifacts.md">
+                            <div class="feature-name">AI Catalog Artifacts</div>
+                            <div class="feature-description">Comprehensive artifact management system</div>
+                        </div>
+                        <div class="feature-card" data-file="agentic-ai.md">
+                            <div class="feature-name">Agentic AI</div>
+                            <div class="feature-description">Autonomous AI agents and multi-agent systems</div>
+                        </div>
+                        <div class="feature-card" data-file="federated-learning.md">
+                            <div class="feature-name">Federated Learning</div>
+                            <div class="feature-description">Privacy-preserving distributed ML</div>
+                        </div>
+                        <div class="feature-card" data-file="llm-models.md">
+                            <div class="feature-name">LLM Models</div>
+                            <div class="feature-description">Large language model lifecycle management</div>
+                        </div>
+                        <div class="feature-card" data-file="rag-chat.md">
+                            <div class="feature-name">RAG Chat</div>
+                            <div class="feature-description">Retrieval-augmented generation chat system</div>
+                        </div>
+                        <div class="feature-card" data-file="workflows.md">
+                            <div class="feature-name">Workflows</div>
+                            <div class="feature-description">Visual AI pipeline orchestration</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="persona-section" data-persona="operations">
+                    <div class="persona-header">
+                        <div class="persona-icon operations">⚙️</div>
+                        <h2 class="persona-title">Operations Persona</h2>
+                    </div>
+                    <div class="feature-grid">
+                        <div class="feature-card" data-file="sql-lab.md">
+                            <div class="feature-name">SQL Lab</div>
+                            <div class="feature-description">Advanced SQL analytics environment</div>
+                        </div>
+                        <div class="feature-card" data-file="ai-zones.md">
+                            <div class="feature-name">AI Zones</div>
+                            <div class="feature-description">Dedicated compute environments</div>
+                        </div>
+                        <div class="feature-card" data-file="deployments.md">
+                            <div class="feature-name">Deployments</div>
+                            <div class="feature-description">Deployment management and rollback</div>
+                        </div>
+                        <div class="feature-card" data-file="inference-model.md">
+                            <div class="feature-name">Inference Model</div>
+                            <div class="feature-description">KServe-based model serving</div>
+                        </div>
+                        <div class="feature-card" data-file="spark-jobs.md">
+                            <div class="feature-name">Spark Jobs</div>
+                            <div class="feature-description">Big data processing with visual designer</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="persona-section" data-persona="business">
+                    <div class="persona-header">
+                        <div class="persona-icon business">📊</div>
+                        <h2 class="persona-title">Business Persona</h2>
+                    </div>
+                    <div class="feature-grid">
+                        <div class="feature-card" data-file="connections.md">
+                            <div class="feature-name">Connections</div>
+                            <div class="feature-description">Unified data source connectivity</div>
+                        </div>
+                        <div class="feature-card" data-file="monitoring.md">
+                            <div class="feature-name">Monitoring</div>
+                            <div class="feature-description">Comprehensive observability platform</div>
+                        </div>
+                        <div class="feature-card" data-file="cost-center.md">
+                            <div class="feature-name">Cost Center</div>
+                            <div class="feature-description">Cost tracking and optimization</div>
+                        </div>
+                        <div class="feature-card" data-file="ci-cd.md">
+                            <div class="feature-name">CI/CD</div>
+                            <div class="feature-description">Tekton-based pipeline automation</div>
+                        </div>
+                        <div class="feature-card" data-file="converge-app.md">
+                            <div class="feature-name">Converge App</div>
+                            <div class="feature-description">Low-code/no-code app builder</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="persona-section" data-persona="administrative">
+                    <div class="persona-header">
+                        <div class="persona-icon administrative">🛡️</div>
+                        <h2 class="persona-title">Administrative Persona</h2>
+                    </div>
+                    <div class="feature-grid">
+                        <div class="feature-card" data-file="admin-dashboard.md">
+                            <div class="feature-name">Admin Dashboard</div>
+                            <div class="feature-description">Administrative control center</div>
+                        </div>
+                        <div class="feature-card" data-file="user-management.md">
+                            <div class="feature-name">User Management</div>
+                            <div class="feature-description">User lifecycle and access control</div>
+                        </div>
+                        <div class="feature-card" data-file="menu-permissions.md">
+                            <div class="feature-name">Menu Permissions</div>
+                            <div class="feature-description">Dynamic menu and feature access</div>
+                        </div>
+                        <div class="feature-card" data-file="about-versioning.md">
+                            <div class="feature-name">About & Versioning</div>
+                            <div class="feature-description">Platform information and versioning</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="diagram-view" id="diagramView">
+            <svg id="diagram"></svg>
+        </div>
+    </div>
+
+    <div class="modal" id="featureModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle"></h3>
+                <button class="close-button" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="markdown-content" id="modalBody">
+                <div style="text-align: center; padding: 2rem;">
+                    <p style="color: #6B7280;">Loading documentation...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const features = {
+            'ai-catalog.md': { title: 'AI Catalog', persona: 'data-science', x: 200, y: 100 },
+            'ai-catalog-artifacts.md': { title: 'AI Catalog Artifacts', persona: 'data-science', x: 400, y: 100 },
+            'agentic-ai.md': { title: 'Agentic AI', persona: 'data-science', x: 600, y: 100 },
+            'federated-learning.md': { title: 'Federated Learning', persona: 'data-science', x: 800, y: 100 },
+            'llm-models.md': { title: 'LLM Models', persona: 'data-science', x: 200, y: 200 },
+            'rag-chat.md': { title: 'RAG Chat', persona: 'data-science', x: 400, y: 200 },
+            'workflows.md': { title: 'Workflows', persona: 'data-science', x: 600, y: 200 },
+            'sql-lab.md': { title: 'SQL Lab', persona: 'operations', x: 150, y: 350 },
+            'ai-zones.md': { title: 'AI Zones', persona: 'operations', x: 350, y: 350 },
+            'deployments.md': { title: 'Deployments', persona: 'operations', x: 550, y: 350 },
+            'inference-model.md': { title: 'Inference Model', persona: 'operations', x: 750, y: 350 },
+            'spark-jobs.md': { title: 'Spark Jobs', persona: 'operations', x: 950, y: 350 },
+            'connections.md': { title: 'Connections', persona: 'business', x: 200, y: 500 },
+            'monitoring.md': { title: 'Monitoring', persona: 'business', x: 400, y: 500 },
+            'cost-center.md': { title: 'Cost Center', persona: 'business', x: 600, y: 500 },
+            'ci-cd.md': { title: 'CI/CD', persona: 'business', x: 800, y: 500 },
+            'converge-app.md': { title: 'Converge App', persona: 'business', x: 1000, y: 500 },
+            'admin-dashboard.md': { title: 'Admin Dashboard', persona: 'administrative', x: 300, y: 650 },
+            'user-management.md': { title: 'User Management', persona: 'administrative', x: 500, y: 650 },
+            'menu-permissions.md': { title: 'Menu Permissions', persona: 'administrative', x: 700, y: 650 },
+            'about-versioning.md': { title: 'About & Versioning', persona: 'administrative', x: 900, y: 650 }
+        };
+
+        const connections = [
+            // Data Science internal connections
+            ['ai-catalog.md', 'ai-catalog-artifacts.md'],
+            ['ai-catalog.md', 'workflows.md'],
+            ['llm-models.md', 'rag-chat.md'],
+            ['agentic-ai.md', 'llm-models.md'],
+            ['federated-learning.md', 'workflows.md'],
+            
+            // Operations internal connections
+            ['ai-zones.md', 'deployments.md'],
+            ['deployments.md', 'inference-model.md'],
+            ['spark-jobs.md', 'sql-lab.md'],
+            
+            // Business internal connections
+            ['connections.md', 'monitoring.md'],
+            ['monitoring.md', 'cost-center.md'],
+            ['ci-cd.md', 'deployments.md'],
+            ['converge-app.md', 'connections.md'],
+            
+            // Administrative connections
+            ['admin-dashboard.md', 'user-management.md'],
+            ['user-management.md', 'menu-permissions.md'],
+            ['admin-dashboard.md', 'monitoring.md'],
+            
+            // Cross-persona connections
+            ['workflows.md', 'ai-zones.md'],
+            ['ai-catalog.md', 'inference-model.md'],
+            ['cost-center.md', 'ai-zones.md'],
+            ['user-management.md', 'connections.md']
+        ];
+
+        const personaColors = {
+            'data-science': '#8B5CF6',
+            'operations': '#EC4899',
+            'business': '#3B82F6',
+            'administrative': '#F59E0B'
+        };
+
+        let currentView = 'tree';
+
+        function toggleView(view) {
+            currentView = view;
+            document.querySelectorAll('.toggle-button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (view === 'tree') {
+                document.getElementById('treeView').classList.add('active');
+                document.getElementById('diagramView').classList.remove('active');
+            } else {
+                document.getElementById('treeView').classList.remove('active');
+                document.getElementById('diagramView').classList.add('active');
+                if (!document.getElementById('diagram').innerHTML) {
+                    drawDiagram();
+                }
+            }
+        }
+
+        function drawDiagram() {
+            const svg = document.getElementById('diagram');
+            svg.innerHTML = '';
+            
+            // Draw connections first (so they appear behind nodes)
+            connections.forEach(([from, to]) => {
+                const fromNode = features[from];
+                const toNode = features[to];
+                
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('class', 'link');
+                line.setAttribute('x1', fromNode.x);
+                line.setAttribute('y1', fromNode.y);
+                line.setAttribute('x2', toNode.x);
+                line.setAttribute('y2', toNode.y);
+                svg.appendChild(line);
+            });
+            
+            // Draw nodes
+            Object.entries(features).forEach(([filename, feature]) => {
+                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                g.setAttribute('class', 'node');
+                g.setAttribute('transform', `translate(${feature.x}, ${feature.y})`);
+                g.style.cursor = 'pointer';
+                g.onclick = () => showFeatureDetails(filename);
+                
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('r', '30');
+                circle.setAttribute('fill', personaColors[feature.persona]);
+                circle.setAttribute('stroke', 'white');
+                circle.setAttribute('stroke-width', '3');
+                
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('dy', '35');
+                text.setAttribute('text-anchor', 'middle');
+                text.style.fontSize = '12px';
+                text.style.fontWeight = '500';
+                text.textContent = feature.title;
+                
+                g.appendChild(circle);
+                g.appendChild(text);
+                svg.appendChild(g);
+            });
+            
+            // Add persona labels
+            const personas = [
+                { name: 'Data Science', x: 500, y: 50, color: personaColors['data-science'] },
+                { name: 'Operations', x: 550, y: 300, color: personaColors['operations'] },
+                { name: 'Business', x: 600, y: 450, color: personaColors['business'] },
+                { name: 'Administrative', x: 600, y: 600, color: personaColors['administrative'] }
+            ];
+            
+            personas.forEach(persona => {
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', persona.x);
+                text.setAttribute('y', persona.y);
+                text.setAttribute('text-anchor', 'middle');
+                text.style.fontSize = '18px';
+                text.style.fontWeight = '600';
+                text.style.fill = persona.color;
+                text.textContent = persona.name;
+                svg.appendChild(text);
+            });
+        }
+
+        async function showFeatureDetails(filename) {
+            const feature = features[filename];
+            if (!feature) return;
+
+            document.getElementById('modalTitle').textContent = feature.title;
+            document.getElementById('modalBody').innerHTML = '<div style="text-align: center; padding: 2rem;"><p style="color: #6B7280;">Loading documentation...</p></div>';
+            document.getElementById('featureModal').style.display = 'block';
+            
+            try {
+                const response = await fetch(filename);
+                const markdown = await response.text();
+                const html = marked.parse(markdown);
+                document.getElementById('modalBody').innerHTML = html;
+                
+                // Apply syntax highlighting to code blocks
+                document.querySelectorAll('pre code').forEach((block) => {
+                    Prism.highlightElement(block);
+                });
+            } catch (error) {
+                document.getElementById('modalBody').innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <p style="color: #EF4444;">Error loading documentation</p>
+                        <p style="color: #6B7280; margin-top: 1rem;">Please ensure the markdown file exists at: ${filename}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('featureModal').style.display = 'none';
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            if (currentView === 'tree') {
+                const cards = document.querySelectorAll('.feature-card');
+                cards.forEach(card => {
+                    const name = card.querySelector('.feature-name').textContent.toLowerCase();
+                    const description = card.querySelector('.feature-description').textContent.toLowerCase();
+                    
+                    if (name.includes(searchTerm) || description.includes(searchTerm)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+        });
+
+        // Feature card click handlers
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const filename = this.getAttribute('data-file');
+                showFeatureDetails(filename);
+            });
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            if (e.target === document.getElementById('featureModal')) {
+                closeModal();
+            }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
