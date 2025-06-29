@@ -295,13 +295,14 @@
             transform: translate(-50%, -50%);
             background: white;
             border-radius: 16px;
-            padding: 2rem;
-            max-width: 90%;
-            width: 1000px;
+            padding: 0;
+            max-width: 95%;
+            width: 1200px;
             max-height: 90vh;
-            overflow-y: auto;
+            overflow: hidden;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
             border: 1px solid #E5E7EB;
+            display: flex;
         }
 
         .modal-header {
@@ -310,7 +311,8 @@
             align-items: center;
             margin-bottom: 1.5rem;
             border-bottom: 1px solid #E5E7EB;
-            padding-bottom: 1rem;
+            padding: 2rem 2rem 1rem 2rem;
+            flex-shrink: 0;
         }
 
         .modal-title {
@@ -338,18 +340,24 @@
         .markdown-content {
             color: #374151;
             line-height: 1.8;
+            padding: 0 2rem 2rem 2rem;
+            overflow-y: auto;
+            flex: 1;
         }
 
         .markdown-content h1, .markdown-content h2, .markdown-content h3 {
-            color: #1F2937;
+            color: #1E40AF;
             margin-top: 2rem;
             margin-bottom: 1rem;
         }
 
         .markdown-content h1 {
             font-size: 2rem;
-            border-bottom: 2px solid #E5E7EB;
+            border-bottom: 2px solid #3B82F6;
             padding-bottom: 0.5rem;
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .markdown-content h2 {
@@ -387,22 +395,152 @@
         }
 
         .markdown-content blockquote {
-            border-left: 4px solid #7C3AED;
+            border-left: 4px solid #3B82F6;
             padding-left: 1rem;
             margin: 1rem 0;
-            color: #6B7280;
+            color: #1E40AF;
             font-style: italic;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(29, 78, 216, 0.05));
+            border-radius: 0 6px 6px 0;
         }
 
         .markdown-content a {
-            color: #7C3AED;
+            color: #3B82F6;
             text-decoration: none;
             border-bottom: 1px solid transparent;
-            transition: border-color 0.3s ease;
+            transition: all 0.3s ease;
         }
 
         .markdown-content a:hover {
-            border-bottom-color: #7C3AED;
+            border-bottom-color: #3B82F6;
+            color: #1D4ED8;
+        }
+
+        /* Section Highlighting Styles */
+        .markdown-content .section-highlighted {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(29, 78, 216, 0.05));
+            border-left: 4px solid #3B82F6;
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.5rem;
+            margin: 0.5rem -1.5rem;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .markdown-content .section-highlighted::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            border-radius: 0 2px 2px 0;
+        }
+
+        /* Table of Contents Styles */
+        .modal-sidebar {
+            width: 250px;
+            background: #F9FAFB;
+            border-right: 1px solid #E5E7EB;
+            padding: 1rem;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .modal-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .toc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .toc-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .toc-toggle {
+            background: none;
+            border: none;
+            color: #6B7280;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .toc-toggle:hover {
+            background: #E5E7EB;
+            color: #374151;
+        }
+
+        .toc-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .toc-item {
+            margin-bottom: 0.25rem;
+        }
+
+        .toc-link {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            color: #6B7280;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            line-height: 1.4;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .toc-link:hover {
+            background: #E5E7EB;
+            color: #374151;
+        }
+
+        .toc-link.active {
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            color: white;
+            border-left: 4px solid #1E40AF;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+            transform: translateX(2px);
+        }
+
+        .toc-link.level-1 {
+            font-weight: 600;
+            padding-left: 0.75rem;
+        }
+
+        .toc-link.level-2 {
+            padding-left: 1.5rem;
+            font-size: 0.8rem;
+        }
+
+        .toc-link.level-3 {
+            padding-left: 2.25rem;
+            font-size: 0.75rem;
+        }
+
+        .toc-empty {
+            color: #9CA3AF;
+            font-style: italic;
+            text-align: center;
+            padding: 1rem 0.5rem;
         }
 
         .markdown-content table {
@@ -493,17 +631,32 @@
             .container {
                 padding: 1rem;
             }
-            
+
             h1 {
                 font-size: 2rem;
             }
-            
+
             .feature-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .modal-content {
                 width: 95%;
+                flex-direction: column;
+            }
+
+            .modal-sidebar {
+                width: 100%;
+                max-height: 200px;
+                border-right: none;
+                border-bottom: 1px solid #E5E7EB;
+            }
+
+            .modal-header {
+                padding: 1rem;
+            }
+
+            .markdown-content {
                 padding: 1rem;
             }
         }
@@ -679,13 +832,23 @@
 
     <div class="modal" id="featureModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modalTitle"></h3>
-                <button class="close-button" onclick="closeModal()">&times;</button>
+            <div class="modal-sidebar" id="tocSidebar">
+                <div class="toc-header">
+                    <span class="toc-title">Table of Contents</span>
+                </div>
+                <div id="tocContent">
+                    <div class="toc-empty">Loading table of contents...</div>
+                </div>
             </div>
-            <div class="markdown-content" id="modalBody">
-                <div style="text-align: center; padding: 2rem;">
-                    <p style="color: #6B7280;">Loading documentation...</p>
+            <div class="modal-main">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modalTitle"></h3>
+                    <button class="close-button" onclick="closeModal()">&times;</button>
+                </div>
+                <div class="markdown-content" id="modalBody">
+                    <div style="text-align: center; padding: 2rem;">
+                        <p style="color: #6B7280;">Loading documentation...</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -723,23 +886,23 @@
             ['llm-models.md', 'rag-chat.md'],
             ['agentic-ai.md', 'llm-models.md'],
             ['federated-learning.md', 'workflows.md'],
-            
+
             // Operations internal connections
             ['ai-zones.md', 'deployments.md'],
             ['deployments.md', 'inference-model.md'],
             ['spark-jobs.md', 'sql-lab.md'],
-            
+
             // Business internal connections
             ['connections.md', 'monitoring.md'],
             ['monitoring.md', 'cost-center.md'],
             ['ci-cd.md', 'deployments.md'],
             ['converge-app.md', 'connections.md'],
-            
+
             // Administrative connections
             ['admin-dashboard.md', 'user-management.md'],
             ['user-management.md', 'menu-permissions.md'],
             ['admin-dashboard.md', 'monitoring.md'],
-            
+
             // Cross-persona connections
             ['workflows.md', 'ai-zones.md'],
             ['ai-catalog.md', 'inference-model.md'],
@@ -755,12 +918,14 @@
         };
 
         let currentView = 'tree';
+        let userManuallySelectedTOC = false;
+        let manualSelectionTimer = null;
 
         function toggleView(view) {
             currentView = view;
             document.querySelectorAll('.toggle-button').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-            
+
             if (view === 'tree') {
                 document.getElementById('treeView').classList.add('active');
                 document.getElementById('diagramView').classList.remove('active');
@@ -776,12 +941,12 @@
         function drawDiagram() {
             const svg = document.getElementById('diagram');
             svg.innerHTML = '';
-            
+
             // Draw connections first (so they appear behind nodes)
             connections.forEach(([from, to]) => {
                 const fromNode = features[from];
                 const toNode = features[to];
-                
+
                 const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                 line.setAttribute('class', 'link');
                 line.setAttribute('x1', fromNode.x);
@@ -790,7 +955,7 @@
                 line.setAttribute('y2', toNode.y);
                 svg.appendChild(line);
             });
-            
+
             // Draw nodes
             Object.entries(features).forEach(([filename, feature]) => {
                 const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -798,25 +963,25 @@
                 g.setAttribute('transform', `translate(${feature.x}, ${feature.y})`);
                 g.style.cursor = 'pointer';
                 g.onclick = () => showFeatureDetails(filename);
-                
+
                 const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 circle.setAttribute('r', '30');
                 circle.setAttribute('fill', personaColors[feature.persona]);
                 circle.setAttribute('stroke', 'white');
                 circle.setAttribute('stroke-width', '3');
-                
+
                 const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                 text.setAttribute('dy', '35');
                 text.setAttribute('text-anchor', 'middle');
                 text.style.fontSize = '12px';
                 text.style.fontWeight = '500';
                 text.textContent = feature.title;
-                
+
                 g.appendChild(circle);
                 g.appendChild(text);
                 svg.appendChild(g);
             });
-            
+
             // Add persona labels
             const personas = [
                 { name: 'Data Science', x: 500, y: 50, color: personaColors['data-science'] },
@@ -824,7 +989,7 @@
                 { name: 'Business', x: 600, y: 450, color: personaColors['business'] },
                 { name: 'Administrative', x: 600, y: 600, color: personaColors['administrative'] }
             ];
-            
+
             personas.forEach(persona => {
                 const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                 text.setAttribute('x', persona.x);
@@ -838,24 +1003,220 @@
             });
         }
 
+        // Function to parse markdown headers and generate TOC
+        function generateTOC(markdown) {
+            const lines = markdown.split('\n');
+            const toc = [];
+
+            lines.forEach((line, index) => {
+                const match = line.match(/^(#{1,3})\s+(.+)$/);
+                if (match) {
+                    const level = match[1].length;
+                    const title = match[2].trim();
+                    const id = title.toLowerCase()
+                        .replace(/[^\w\s-]/g, '')
+                        .replace(/\s+/g, '-')
+                        .replace(/-+/g, '-')
+                        .replace(/^-|-$/g, '');
+
+                    toc.push({
+                        level,
+                        title,
+                        id: id || `heading-${index}`,
+                        line: index
+                    });
+                }
+            });
+
+            return toc;
+        }
+
+        // Function to render TOC HTML
+        function renderTOC(toc) {
+            if (toc.length === 0) {
+                return '<div class="toc-empty">No headings found in this document</div>';
+            }
+
+            let html = '<ul class="toc-list">';
+            toc.forEach(item => {
+                html += `
+                    <li class="toc-item">
+                        <a class="toc-link level-${item.level}" href="#${item.id}" onclick="scrollToHeading('${item.id}'); return false;">
+                            ${item.title}
+                        </a>
+                    </li>
+                `;
+            });
+            html += '</ul>';
+            return html;
+        }
+
+        // Function to add IDs to headings in the rendered HTML
+        function addHeadingIds(html, toc) {
+            let modifiedHtml = html;
+            toc.forEach(item => {
+                const headingRegex = new RegExp(`<h${item.level}([^>]*)>\\s*${item.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*</h${item.level}>`, 'i');
+                modifiedHtml = modifiedHtml.replace(headingRegex, `<h${item.level}$1 id="${item.id}">${item.title}</h${item.level}>`);
+            });
+            return modifiedHtml;
+        }
+
+        // Function to scroll to a specific heading
+        function scrollToHeading(headingId) {
+            const element = document.getElementById(headingId);
+            if (element) {
+                const modalBody = document.getElementById('modalBody');
+
+                // Calculate position relative to the scrollable container
+                const containerRect = modalBody.getBoundingClientRect();
+                const elementRect = element.getBoundingClientRect();
+
+                // Calculate the element's position within the container's content
+                const elementRelativeTop = elementRect.top - containerRect.top + modalBody.scrollTop;
+
+                // Set flag to indicate user manually selected TOC item
+                userManuallySelectedTOC = true;
+
+                // Clear any existing timer
+                if (manualSelectionTimer) {
+                    clearTimeout(manualSelectionTimer);
+                }
+
+                // Reset the flag after 3 seconds to allow automatic sync to resume
+                manualSelectionTimer = setTimeout(() => {
+                    userManuallySelectedTOC = false;
+                }, 3000);
+
+                modalBody.scrollTo({
+                    top: elementRelativeTop,
+                    behavior: 'smooth'
+                });
+
+                // Update active TOC item
+                document.querySelectorAll('.toc-link').forEach(link => link.classList.remove('active'));
+                document.querySelector(`.toc-link[href="#${headingId}"]`)?.classList.add('active');
+
+                // Highlight the section in the document
+                highlightSection(headingId);
+            }
+        }
+
+        // Function to highlight a section in the document
+        function highlightSection(headingId) {
+            // Remove existing highlights
+            document.querySelectorAll('.section-highlighted').forEach(section => {
+                section.classList.remove('section-highlighted');
+            });
+
+            // Find the heading element
+            const heading = document.getElementById(headingId);
+            if (!heading) return;
+
+            // Find the section content (from this heading to the next heading of same or higher level)
+            const headingLevel = parseInt(heading.tagName.charAt(1)); // Get level from H1, H2, H3
+            let currentElement = heading;
+            const sectionElements = [heading];
+
+            // Collect all elements until the next heading of same or higher level
+            while (currentElement.nextElementSibling) {
+                currentElement = currentElement.nextElementSibling;
+                const isHeading = /^H[1-6]$/.test(currentElement.tagName);
+
+                if (isHeading) {
+                    const currentLevel = parseInt(currentElement.tagName.charAt(1));
+                    if (currentLevel <= headingLevel) {
+                        break; // Stop at next heading of same or higher level
+                    }
+                }
+
+                sectionElements.push(currentElement);
+            }
+
+            // Apply highlighting to all elements in the section
+            sectionElements.forEach(element => {
+                element.classList.add('section-highlighted');
+            });
+        }
+
+        // Function to toggle TOC visibility
+        function toggleTOC() {
+            const sidebar = document.getElementById('tocSidebar');
+            const isHidden = sidebar.style.display === 'none';
+            sidebar.style.display = isHidden ? 'block' : 'none';
+
+            // Update toggle button icon
+            const toggleBtn = document.querySelector('.toc-toggle svg path');
+            if (toggleBtn) {
+                toggleBtn.setAttribute('d', isHidden ? 'M3 12h18m-9-9l9 9-9 9' : 'M15 18l-6-6 6-6');
+            }
+        }
+
+        // Function to update active TOC item based on scroll position
+        function updateActiveTOCItem() {
+            // Don't update TOC if user manually selected an item
+            if (userManuallySelectedTOC) {
+                return;
+            }
+
+            const modalBody = document.getElementById('modalBody');
+            const headings = modalBody.querySelectorAll('h1, h2, h3');
+            const scrollTop = modalBody.scrollTop;
+
+            let activeHeading = null;
+            headings.forEach(heading => {
+                if (heading.offsetTop <= scrollTop + 100) {
+                    activeHeading = heading;
+                }
+            });
+
+            document.querySelectorAll('.toc-link').forEach(link => link.classList.remove('active'));
+            if (activeHeading && activeHeading.id) {
+                document.querySelector(`.toc-link[href="#${activeHeading.id}"]`)?.classList.add('active');
+                // Highlight the section in the document
+                highlightSection(activeHeading.id);
+            } else {
+                // Remove all highlights if no active heading
+                document.querySelectorAll('.section-highlighted').forEach(section => {
+                    section.classList.remove('section-highlighted');
+                });
+            }
+        }
+
         async function showFeatureDetails(filename) {
             const feature = features[filename];
             if (!feature) return;
 
             document.getElementById('modalTitle').textContent = feature.title;
             document.getElementById('modalBody').innerHTML = '<div style="text-align: center; padding: 2rem;"><p style="color: #6B7280;">Loading documentation...</p></div>';
+            document.getElementById('tocContent').innerHTML = '<div class="toc-empty">Loading table of contents...</div>';
             document.getElementById('featureModal').style.display = 'block';
-            
+
             try {
                 const response = await fetch(filename);
                 const markdown = await response.text();
+
+                // Generate TOC from markdown
+                const toc = generateTOC(markdown);
+
+                // Parse markdown to HTML
                 const html = marked.parse(markdown);
-                document.getElementById('modalBody').innerHTML = html;
-                
+
+                // Add IDs to headings
+                const htmlWithIds = addHeadingIds(html, toc);
+
+                // Update content
+                document.getElementById('modalBody').innerHTML = htmlWithIds;
+                document.getElementById('tocContent').innerHTML = renderTOC(toc);
+
                 // Apply syntax highlighting to code blocks
                 document.querySelectorAll('pre code').forEach((block) => {
                     Prism.highlightElement(block);
                 });
+
+                // Add scroll listener for active TOC item
+                const modalBody = document.getElementById('modalBody');
+                modalBody.addEventListener('scroll', updateActiveTOCItem);
+
             } catch (error) {
                 document.getElementById('modalBody').innerHTML = `
                     <div style="text-align: center; padding: 2rem;">
@@ -863,6 +1224,7 @@
                         <p style="color: #6B7280; margin-top: 1rem;">Please ensure the markdown file exists at: ${filename}</p>
                     </div>
                 `;
+                document.getElementById('tocContent').innerHTML = '<div class="toc-empty">Error loading table of contents</div>';
             }
         }
 
@@ -873,13 +1235,13 @@
         // Search functionality
         document.getElementById('searchInput').addEventListener('input', function(e) {
             const searchTerm = e.target.value.toLowerCase();
-            
+
             if (currentView === 'tree') {
                 const cards = document.querySelectorAll('.feature-card');
                 cards.forEach(card => {
                     const name = card.querySelector('.feature-name').textContent.toLowerCase();
                     const description = card.querySelector('.feature-description').textContent.toLowerCase();
-                    
+
                     if (name.includes(searchTerm) || description.includes(searchTerm)) {
                         card.style.display = 'block';
                     } else {
