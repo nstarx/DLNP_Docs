@@ -4,6 +4,8 @@
 
 AI Zones are dedicated compute environments within the NStarX platform that provide isolated, scalable, and optimized infrastructure for running AI/ML workloads. These purpose-built environments enable organizations to deploy and manage AI applications with fine-grained control over resources, security, and performance while supporting multi-cloud deployments across AWS, Azure, and Google Cloud Platform.
 
+Each AI Zone functions as a self-contained ecosystem with its own compute resources, storage systems, networking infrastructure, and security boundaries. Organizations can create multiple AI Zones to segregate different environments (development, staging, production), separate different business units or projects, comply with data residency requirements, or optimize for specific workload characteristics. The platform abstracts the complexity of managing Kubernetes clusters across different cloud providers while providing a consistent interface for deployment and management.
+
 ## Purpose
 
 AI Zones address critical infrastructure needs for AI/ML operations:
@@ -21,11 +23,11 @@ AI Zones address critical infrastructure needs for AI/ML operations:
 ### 1. Dedicated Compute Environments
 
 #### Environment Types
-- **Shared Environments**: Cost-effective resources for development and testing
-- **Dedicated Environments**: Isolated resources for production workloads
-- **GPU-Optimized Zones**: High-performance computing for deep learning
-- **CPU-Optimized Zones**: Efficient processing for inference workloads
-- **Memory-Optimized Zones**: Large memory footprint for data processing
+- **Shared Environments**: Cost-effective resources for development and testing where multiple teams can share underlying infrastructure while maintaining logical separation. These environments typically use resource quotas and namespace isolation to ensure fair usage while maximizing cost efficiency. Ideal for proof-of-concepts, experimentation, and non-critical workloads.
+- **Dedicated Environments**: Isolated resources for production workloads with guaranteed performance, dedicated hardware allocation, and strict security boundaries. These environments provide predictable performance, compliance with regulatory requirements, and complete control over the infrastructure stack. Critical for production AI applications, sensitive data processing, and high-stakes model training.
+- **GPU-Optimized Zones**: High-performance computing for deep learning with access to latest generation GPUs including NVIDIA A100, H100, and AMD MI250X. These zones are configured with optimized drivers, CUDA libraries, and ML frameworks pre-installed. Features include multi-GPU support, NVLink connectivity, GPU Direct storage, and specialized cooling systems for sustained performance.
+- **CPU-Optimized Zones**: Efficient processing for inference workloads using high-frequency processors optimized for single-threaded performance. These zones excel at serving models with low latency requirements, batch inference processing, and CPU-based ML algorithms. Includes Intel AVX-512 and AMD EPYC processors with large L3 caches.
+- **Memory-Optimized Zones**: Large memory footprint for data processing with instances supporting up to 24TB of RAM. Perfect for in-memory databases, large-scale feature engineering, graph neural networks, and memory-intensive preprocessing tasks. Includes support for Intel Optane persistent memory for even larger working sets.
 
 #### Namespace Management
 - **Isolated Namespaces**: Logical separation of resources
@@ -37,11 +39,11 @@ AI Zones address critical infrastructure needs for AI/ML operations:
 ### 2. Multi-Cloud Support
 
 #### AWS Integration
-- **EKS Clusters**: Managed Kubernetes on AWS
-- **EC2 Instance Types**: Wide range of compute options
-- **Auto Scaling Groups**: Dynamic resource allocation
-- **VPC Integration**: Secure network isolation
-- **IAM Integration**: AWS identity management
+- **EKS Clusters**: Managed Kubernetes on AWS with automatic control plane management, security patching, and high availability across multiple availability zones. Supports all EKS features including Fargate for serverless containers, managed node groups, and custom AMIs. Integrates with AWS Container Insights for deep observability and AWS App Mesh for service mesh capabilities.
+- **EC2 Instance Types**: Wide range of compute options spanning from t3.micro for development to p4d.24xlarge for massive parallel training. Includes access to Graviton ARM-based instances for cost optimization, bare metal instances for maximum performance, and specialized instances like DL1 with Habana Gaudi accelerators. Spot instance support for up to 90% cost savings on fault-tolerant workloads.
+- **Auto Scaling Groups**: Dynamic resource allocation with predictive scaling based on CloudWatch metrics, scheduled scaling for known patterns, and target tracking for maintaining performance thresholds. Supports mixed instance policies for cost optimization, warm pools for faster scaling, and lifecycle hooks for custom initialization routines.
+- **VPC Integration**: Secure network isolation with support for multiple availability zones, private subnets with NAT gateways, VPC peering for cross-region connectivity, and AWS PrivateLink for secure service access. Includes flow logs for security monitoring and VPC endpoints for reduced data transfer costs.
+- **IAM Integration**: AWS identity management with fine-grained permissions using IAM roles for service accounts (IRSA), temporary credentials via STS, and integration with AWS Organizations for multi-account setups. Supports permission boundaries, session tags for dynamic access control, and CloudTrail integration for comprehensive audit logging.
 
 #### Azure Integration
 - **AKS Clusters**: Azure Kubernetes Service

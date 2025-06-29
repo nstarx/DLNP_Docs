@@ -746,9 +746,9 @@
                         <h2 class="persona-title">Operations Persona</h2>
                     </div>
                     <div class="feature-grid">
-                        <div class="feature-card" data-file="sql-lab.md">
-                            <div class="feature-name">SQL Lab</div>
-                            <div class="feature-description">Advanced SQL analytics environment</div>
+                        <div class="feature-card" data-file="architecture.md">
+                            <div class="feature-name">Platform Architecture</div>
+                            <div class="feature-description">Kubernetes CRD-based backend design</div>
                         </div>
                         <div class="feature-card" data-file="ai-zones.md">
                             <div class="feature-name">AI Zones</div>
@@ -863,6 +863,7 @@
             'llm-models.md': { title: 'LLM Models', persona: 'data-science', x: 200, y: 200 },
             'rag-chat.md': { title: 'RAG Chat', persona: 'data-science', x: 400, y: 200 },
             'workflows.md': { title: 'Workflows', persona: 'data-science', x: 600, y: 200 },
+            'architecture.md': { title: 'Architecture', persona: 'operations', x: 50, y: 350 },
             'sql-lab.md': { title: 'SQL Lab', persona: 'operations', x: 150, y: 350 },
             'ai-zones.md': { title: 'AI Zones', persona: 'operations', x: 350, y: 350 },
             'deployments.md': { title: 'Deployments', persona: 'operations', x: 550, y: 350 },
@@ -888,6 +889,8 @@
             ['federated-learning.md', 'workflows.md'],
 
             // Operations internal connections
+            ['architecture.md', 'ai-zones.md'],
+            ['architecture.md', 'deployments.md'],
             ['ai-zones.md', 'deployments.md'],
             ['deployments.md', 'inference-model.md'],
             ['spark-jobs.md', 'sql-lab.md'],
