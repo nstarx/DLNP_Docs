@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI/ML Platform Architecture Diagrams</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#f4f4f4',
+                primaryTextColor: '#333',
+                primaryBorderColor: '#7C0000',
+                lineColor: '#5D4037',
+                secondaryColor: '#006100',
+                tertiaryColor: '#fff'
+            }
+        });
+    </script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1, h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .diagram-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .mermaid {
+            text-align: center;
+            margin: 20px 0;
+            overflow: auto;
+        }
+        .description {
+            margin: 10px 0;
+            padding: 15px;
+            background-color: #e8f4f8;
+            border-left: 4px solid #3498db;
+            border-radius: 4px;
+        }
+        nav {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        nav a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            opacity: 0.8;
+        }
+        .back-to-top:hover {
+            opacity: 1;
+        }
+        .back-to-main {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .back-to-main:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-to-main">← Back to Documentation</a>
+    
+    <h1>AI/ML Deployment Platform Architecture</h1>
+    
+    <nav>
+        <ul>
+            <li><a href="#overview">System Overview</a></li>
+            <li><a href="#deployment">Deployment Flow</a></li>
+            <li><a href="#rag">RAG Architecture</a></li>
+            <li><a href="#data">Data Flow</a></li>
+            <li><a href="#prompt-to-real">Prompt to Real</a></li>
+        </ul>
+    </nav>
+
+    <div id="overview" class="diagram-container">
+        <h2>System Overview</h2>
+        <div class="description">
+            This diagram shows the overall system architecture, including client layer, API gateway, core services, 
+            infrastructure layer, and storage components. The FastAPI server acts as the central hub, routing requests 
+            to various service managers that interact with Kubernetes, MinIO, and MLflow.
+        </div>
+        <pre class="mermaid">
+graph TB
+    subgraph "Client Layer"
+        Client[Web Client]
+        API[API Client]
+        CLI[CLI Tool]
+    end
+
+    subgraph "API Gateway"
+        FastAPI[FastAPI Server]
+        CORS[CORS Middleware]
+    end
+
+    subgraph "Core Services"
+        ACB[AI Converge Builder]
+        DM[Deployment Manager]
+        RM[RAG Manager]
+        CM[Chat Manager]
+        MM[MLflow Manager]
+        CE[Cost Estimator]
+        SSE[SSE Manager]
+    end
+
+    subgraph "Infrastructure Layer"
+        K8S[Kubernetes API]
+        MinIO[MinIO Storage]
+        MLflow[MLflow Server]
+        CRD[Custom Resources]
+    end
+
+    subgraph "Storage"
+        Models[Model Artifacts]
+        Metrics[Experiment Metrics]
+        Logs[Application Logs]
+    end
+
+    Client --> FastAPI
+    API --> FastAPI
+    CLI --> FastAPI
+    
+    FastAPI --> CORS
+    CORS --> ACB
+    CORS --> DM
+    CORS --> RM
+    CORS --> CM
+    CORS --> MM
+    CORS --> CE
+    CORS --> SSE
+
+    ACB --> K8S
+    DM --> K8S
+    RM --> K8S
+    RM --> CRD
+    CM --> Models
+    MM --> MLflow
+    CE --> K8S
+
+    K8S --> MinIO
+    MLflow --> Metrics
+    MinIO --> Models
+    K8S --> Logs
+
+    style FastAPI fill:#f9f,stroke:#333,stroke-width:4px
+    style K8S fill:#326ce5,stroke:#333,stroke-width:2px
+    style MinIO fill:#c72e49,stroke:#333,stroke-width:2px
+    style MLflow fill:#0194e2,stroke:#333,stroke-width:2px
+        </pre>
+    </div>
+
+    <div id="deployment" class="diagram-container">
+        <h2>Deployment Flow</h2>
+        <div class="description">
+            This sequence diagram illustrates the deployment process, from user request to pod creation. 
+            It shows how the Deployment Manager interacts with Kubernetes to create deployments, 
+            how pods pull model artifacts from MinIO, and the update flow for existing deployments.
+        </div>
+        <pre class="mermaid">
+sequenceDiagram
+    participant User
+    participant FastAPI
+    participant DeploymentManager
+    participant Kubernetes
+    participant MinIO
+    participant Pod
+
+    User->>FastAPI: POST /deployments
+    FastAPI->>DeploymentManager: create_deployment()
+    DeploymentManager->>Kubernetes: Create Deployment
+    Kubernetes->>Pod: Schedule Pod
+    Pod->>MinIO: Pull Model Artifacts
+    MinIO-->>Pod: Model Data
+    Pod-->>Kubernetes: Running Status
+    Kubernetes-->>DeploymentManager: Deployment Created
+    DeploymentManager-->>FastAPI: DeploymentResponse
+    FastAPI-->>User: 200 OK + Deployment Details
+
+    Note over User,Pod: Deployment Update Flow
+    User->>FastAPI: PUT /deployments/{deployment_id}
+    FastAPI->>DeploymentManager: update_deployment()
+    DeploymentManager->>Kubernetes: Update Deployment
+    Kubernetes->>Pod: Rolling Update
+    Pod-->>Kubernetes: Update Complete
+    Kubernetes-->>DeploymentManager: Update Success
+    DeploymentManager-->>FastAPI: Updated Details
+    FastAPI-->>User: 200 OK
+        </pre>
+    </div>
+
+    <div id="rag" class="diagram-container">
+        <h2>RAG (Retrieval-Augmented Generation) Architecture</h2>
+        <div class="description">
+            The RAG architecture diagram shows the flow from user query to generated response. 
+            It includes the embedding process, vector database retrieval, context building, 
+            and final response generation using the language model.
+        </div>
+        <pre class="mermaid">
+graph LR
+    subgraph "RAG System"
+        subgraph "Input Processing"
+            Query[User Query]
+            Embedder[Text Embedder]
+        end
+
+        subgraph "Retrieval"
+            VectorDB[Vector Database]
+            Retriever[Document Retriever]
+        end
+
+        subgraph "Generation"
+            Context[Context Builder]
+            LLM[Language Model]
+            Response[Generated Response]
+        end
+    end
+
+    subgraph "Infrastructure"
+        RAGManager[RAG Manager]
+        K8SCRD[Kubernetes CRD]
+        Storage[MinIO Storage]
+    end
+
+    Query --> Embedder
+    Embedder --> VectorDB
+    VectorDB --> Retriever
+    Retriever --> Context
+    Context --> LLM
+    LLM --> Response
+
+    RAGManager --> K8SCRD
+    K8SCRD --> VectorDB
+    K8SCRD --> Storage
+    Storage --> LLM
+
+    style Query fill:#ffd700,stroke:#333,stroke-width:2px
+    style Response fill:#90ee90,stroke:#333,stroke-width:2px
+    style LLM fill:#87ceeb,stroke:#333,stroke-width:2px
+    style VectorDB fill:#dda0dd,stroke:#333,stroke-width:2px
+        </pre>
+    </div>
+
+    <div id="data" class="diagram-container">
+        <h2>Data Flow Architecture</h2>
+        <div class="description">
+            This flowchart illustrates how data moves through the system, from API endpoints through 
+            service layers to persistence and monitoring. It shows the relationships between different 
+            data processing components including sessions, queues, caches, and event streams.
+        </div>
+        <pre class="mermaid">
+flowchart LR
+    subgraph "API Layer"
+        API[FastAPI Endpoints]
+    end
+
+    subgraph "Service Layer"
+        CM[Chat Manager]
+        DM[Deployment Manager]
+        RM[RAG Manager]
+        MM[MLflow Manager]
+    end
+
+    subgraph "Data Processing"
+        Sessions[Session Store]
+        Queue[Task Queue]
+        Cache[Response Cache]
+    end
+
+    subgraph "Persistence"
+        K8S[Kubernetes etcd]
+        MinIO[MinIO Object Store]
+        MLflow[MLflow Tracking]
+    end
+
+    subgraph "Monitoring"
+        Metrics[Prometheus Metrics]
+        Logs[Log Aggregation]
+        Events[Event Stream]
+    end
+
+    API --> CM
+    API --> DM
+    API --> RM
+    API --> MM
+
+    CM --> Sessions
+    CM --> Queue
+    CM --> Cache
+
+    DM --> K8S
+    RM --> K8S
+    MM --> MLflow
+
+    Queue --> MinIO
+    Cache --> MinIO
+    K8S --> Metrics
+    MLflow --> Metrics
+
+    Sessions --> Events
+    Queue --> Events
+    Metrics --> Logs
+
+    style API fill:#ff6b6b,stroke:#333,stroke-width:3px
+    style K8S fill:#4ecdc4,stroke:#333,stroke-width:2px
+    style MinIO fill:#45b7d1,stroke:#333,stroke-width:2px
+    style MLflow fill:#f7dc6f,stroke:#333,stroke-width:2px
+        </pre>
+    </div>
+
+    <div id="prompt-to-real" class="diagram-container">
+        <h2>Prompt to Real - AI Application Generation Flow</h2>
+        <div class="description">
+            This diagram illustrates the complete flow of the Prompt to Real functionality, showing how natural language 
+            prompts are transformed into fully deployed applications through the AI Converge Builder service.
+        </div>
+        <pre class="mermaid">
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant API
+    participant Builder
+    participant Claude
+    participant K8s
+    participant Registry
+    participant Deploy
+
+    User->>Frontend: Enter prompt & config
+    Frontend->>API: POST /ai-converge-builder
+    API->>Builder: Create generation job
+    Builder->>K8s: Create Kubernetes job
+    K8s->>Claude: Execute generation
+    Claude->>Claude: Generate code
+    Claude->>K8s: Update status: generating
+    K8s->>Builder: Build Docker image
+    Builder->>Registry: Push image
+    Registry-->>Builder: Image stored
+    Builder->>Deploy: Create deployment
+    Deploy->>K8s: Deploy application
+    K8s-->>API: Status: complete
+    API-->>Frontend: Generation complete
+    Frontend-->>User: Show deployed app
+        </pre>
+    </div>
+
+    <a href="#" class="back-to-top">↑ Top</a>
+</body>
+</html>
