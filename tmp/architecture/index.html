@@ -110,7 +110,73 @@
             infrastructure layer, and storage components. The FastAPI server acts as the central hub, routing requests 
             to various service managers that interact with Kubernetes, MinIO, and MLflow.
         </div>
-        <div class="mermaid" id="system-overview"></div>
+        <div class="mermaid">
+graph TB
+    subgraph "Client Layer"
+        Client[Web Client]
+        API[API Client]
+        CLI[CLI Tool]
+    end
+
+    subgraph "API Gateway"
+        FastAPI[FastAPI Server]
+        CORS[CORS Middleware]
+    end
+
+    subgraph "Core Services"
+        ACB[AI Converge Builder]
+        DM[Deployment Manager]
+        RM[RAG Manager]
+        CM[Chat Manager]
+        MM[MLflow Manager]
+        CE[Cost Estimator]
+        SSE[SSE Manager]
+    end
+
+    subgraph "Infrastructure Layer"
+        K8S[Kubernetes API]
+        MinIO[MinIO Storage]
+        MLflow[MLflow Server]
+        CRD[Custom Resources]
+    end
+
+    subgraph "Storage"
+        Models[Model Artifacts]
+        Metrics[Experiment Metrics]
+        Logs[Application Logs]
+    end
+
+    Client --> FastAPI
+    API --> FastAPI
+    CLI --> FastAPI
+    
+    FastAPI --> CORS
+    CORS --> ACB
+    CORS --> DM
+    CORS --> RM
+    CORS --> CM
+    CORS --> MM
+    CORS --> CE
+    CORS --> SSE
+
+    ACB --> K8S
+    DM --> K8S
+    RM --> K8S
+    RM --> CRD
+    CM --> Models
+    MM --> MLflow
+    CE --> K8S
+
+    K8S --> MinIO
+    MLflow --> Metrics
+    MinIO --> Models
+    K8S --> Logs
+
+    style FastAPI fill:#f9f,stroke:#333,stroke-width:4px
+    style K8S fill:#326ce5,stroke:#333,stroke-width:2px
+    style MinIO fill:#c72e49,stroke:#333,stroke-width:2px
+    style MLflow fill:#0194e2,stroke:#333,stroke-width:2px
+        </div>
     </div>
 
     <div id="deployment" class="diagram-container">
@@ -120,7 +186,36 @@
             It shows how the Deployment Manager interacts with Kubernetes to create deployments, 
             how pods pull model artifacts from MinIO, and the update flow for existing deployments.
         </div>
-        <div class="mermaid" id="deployment-flow"></div>
+        <div class="mermaid">
+sequenceDiagram
+    participant User
+    participant FastAPI
+    participant DeploymentManager
+    participant Kubernetes
+    participant MinIO
+    participant Pod
+
+    User->>FastAPI: POST /deployments
+    FastAPI->>DeploymentManager: create_deployment()
+    DeploymentManager->>Kubernetes: Create Deployment
+    Kubernetes->>Pod: Schedule Pod
+    Pod->>MinIO: Pull Model Artifacts
+    MinIO-->>Pod: Model Data
+    Pod-->>Kubernetes: Running Status
+    Kubernetes-->>DeploymentManager: Deployment Created
+    DeploymentManager-->>FastAPI: DeploymentResponse
+    FastAPI-->>User: 200 OK + Deployment Details
+
+    Note over User,Pod: Deployment Update Flow
+    User->>FastAPI: PUT /deployments/{deployment_id}
+    FastAPI->>DeploymentManager: update_deployment()
+    DeploymentManager->>Kubernetes: Update Deployment
+    Kubernetes->>Pod: Rolling Update
+    Pod-->>Kubernetes: Update Complete
+    Kubernetes-->>DeploymentManager: Update Success
+    DeploymentManager-->>FastAPI: Updated Details
+    FastAPI-->>User: 200 OK
+        </div>
     </div>
 
     <div id="rag" class="diagram-container">
@@ -130,7 +225,49 @@
             It includes the embedding process, vector database retrieval, context building, 
             and final response generation using the language model.
         </div>
-        <div class="mermaid" id="rag-architecture"></div>
+        <div class="mermaid">
+graph LR
+    subgraph "RAG System"
+        subgraph "Input Processing"
+            Query[User Query]
+            Embedder[Text Embedder]
+        end
+
+        subgraph "Retrieval"
+            VectorDB[Vector Database]
+            Retriever[Document Retriever]
+        end
+
+        subgraph "Generation"
+            Context[Context Builder]
+            LLM[Language Model]
+            Response[Generated Response]
+        end
+    end
+
+    subgraph "Infrastructure"
+        RAGManager[RAG Manager]
+        K8SCRD[Kubernetes CRD]
+        Storage[MinIO Storage]
+    end
+
+    Query --> Embedder
+    Embedder --> VectorDB
+    VectorDB --> Retriever
+    Retriever --> Context
+    Context --> LLM
+    LLM --> Response
+
+    RAGManager --> K8SCRD
+    K8SCRD --> VectorDB
+    K8SCRD --> Storage
+    Storage --> LLM
+
+    style Query fill:#ffd700,stroke:#333,stroke-width:2px
+    style Response fill:#90ee90,stroke:#333,stroke-width:2px
+    style LLM fill:#87ceeb,stroke:#333,stroke-width:2px
+    style VectorDB fill:#dda0dd,stroke:#333,stroke-width:2px
+        </div>
     </div>
 
     <div id="data" class="diagram-container">
@@ -140,29 +277,66 @@
             service layers to persistence and monitoring. It shows the relationships between different 
             data processing components including sessions, queues, caches, and event streams.
         </div>
-        <div class="mermaid" id="data-flow"></div>
+        <div class="mermaid">
+flowchart LR
+    subgraph "API Layer"
+        API[FastAPI Endpoints]
+    end
+
+    subgraph "Service Layer"
+        CM[Chat Manager]
+        DM[Deployment Manager]
+        RM[RAG Manager]
+        MM[MLflow Manager]
+    end
+
+    subgraph "Data Processing"
+        Sessions[Session Store]
+        Queue[Task Queue]
+        Cache[Response Cache]
+    end
+
+    subgraph "Persistence"
+        K8S[Kubernetes etcd]
+        MinIO[MinIO Object Store]
+        MLflow[MLflow Tracking]
+    end
+
+    subgraph "Monitoring"
+        Metrics[Prometheus Metrics]
+        Logs[Log Aggregation]
+        Events[Event Stream]
+    end
+
+    API --> CM
+    API --> DM
+    API --> RM
+    API --> MM
+
+    CM --> Sessions
+    CM --> Queue
+    CM --> Cache
+
+    DM --> K8S
+    RM --> K8S
+    MM --> MLflow
+
+    Queue --> MinIO
+    Cache --> MinIO
+    K8S --> Metrics
+    MLflow --> Metrics
+
+    Sessions --> Events
+    Queue --> Events
+    Metrics --> Logs
+
+    style API fill:#ff6b6b,stroke:#333,stroke-width:3px
+    style K8S fill:#4ecdc4,stroke:#333,stroke-width:2px
+    style MinIO fill:#45b7d1,stroke:#333,stroke-width:2px
+    style MLflow fill:#f7dc6f,stroke:#333,stroke-width:2px
+        </div>
     </div>
 
     <a href="#" class="back-to-top">↑ Top</a>
-
-    <script>
-        // Load diagram content from .mmd files
-        async function loadDiagram(filename, elementId) {
-            try {
-                const response = await fetch(filename);
-                const content = await response.text();
-                document.getElementById(elementId).textContent = content;
-            } catch (error) {
-                console.error(`Error loading ${filename}:`, error);
-                document.getElementById(elementId).textContent = 'graph LR\n    Error[Failed to load diagram]';
-            }
-        }
-
-        // Load all diagrams
-        loadDiagram('system-overview.mmd', 'system-overview');
-        loadDiagram('deployment-flow.mmd', 'deployment-flow');
-        loadDiagram('rag-architecture.mmd', 'rag-architecture');
-        loadDiagram('data-flow.mmd', 'data-flow');
-    </script>
 </body>
 </html>
