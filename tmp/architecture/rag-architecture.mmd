@@ -1,0 +1,41 @@
+graph LR
+    subgraph "RAG System"
+        subgraph "Input Processing"
+            Query[User Query]
+            Embedder[Text Embedder]
+        end
+
+        subgraph "Retrieval"
+            VectorDB[Vector Database]
+            Retriever[Document Retriever]
+        end
+
+        subgraph "Generation"
+            Context[Context Builder]
+            LLM[Language Model]
+            Response[Generated Response]
+        end
+    end
+
+    subgraph "Infrastructure"
+        RAGManager[RAG Manager]
+        K8SCRD[Kubernetes CRD]
+        Storage[MinIO Storage]
+    end
+
+    Query --> Embedder
+    Embedder --> VectorDB
+    VectorDB --> Retriever
+    Retriever --> Context
+    Context --> LLM
+    LLM --> Response
+
+    RAGManager --> K8SCRD
+    K8SCRD --> VectorDB
+    K8SCRD --> Storage
+    Storage --> LLM
+
+    style Query fill:#ffd700,stroke:#333,stroke-width:2px
+    style Response fill:#90ee90,stroke:#333,stroke-width:2px
+    style LLM fill:#87ceeb,stroke:#333,stroke-width:2px
+    style VectorDB fill:#dda0dd,stroke:#333,stroke-width:2px

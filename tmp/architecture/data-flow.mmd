@@ -1,0 +1,56 @@
+flowchart LR
+    subgraph "API Layer"
+        API[FastAPI Endpoints]
+    end
+
+    subgraph "Service Layer"
+        CM[Chat Manager]
+        DM[Deployment Manager]
+        RM[RAG Manager]
+        MM[MLflow Manager]
+    end
+
+    subgraph "Data Processing"
+        Sessions[Session Store]
+        Queue[Task Queue]
+        Cache[Response Cache]
+    end
+
+    subgraph "Persistence"
+        K8S[Kubernetes etcd]
+        MinIO[MinIO Object Store]
+        MLflow[MLflow Tracking]
+    end
+
+    subgraph "Monitoring"
+        Metrics[Prometheus Metrics]
+        Logs[Log Aggregation]
+        Events[Event Stream]
+    end
+
+    API --> CM
+    API --> DM
+    API --> RM
+    API --> MM
+
+    CM --> Sessions
+    CM --> Queue
+    CM --> Cache
+
+    DM --> K8S
+    RM --> K8S
+    MM --> MLflow
+
+    Queue --> MinIO
+    Cache --> MinIO
+    K8S --> Metrics
+    MLflow --> Metrics
+
+    Sessions --> Events
+    Queue --> Events
+    Metrics --> Logs
+
+    style API fill:#ff6b6b,stroke:#333,stroke-width:3px
+    style K8S fill:#4ecdc4,stroke:#333,stroke-width:2px
+    style MinIO fill:#45b7d1,stroke:#333,stroke-width:2px
+    style MLflow fill:#f7dc6f,stroke:#333,stroke-width:2px

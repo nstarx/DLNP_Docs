@@ -7,6 +7,8 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/panzoom@9.4.3/dist/panzoom.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -416,6 +418,120 @@
             color: #1D4ED8;
         }
 
+        /* Mermaid Diagram Styles */
+        .diagram-section {
+            margin: 3rem 0;
+            padding: 2rem;
+            background: #F9FAFB;
+            border-radius: 12px;
+            border: 1px solid #E5E7EB;
+        }
+
+        .diagram-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1F2937;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #7C3AED;
+        }
+
+        .diagram-container {
+            margin-bottom: 2rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #E5E7EB;
+            padding: 1rem;
+            position: relative;
+        }
+
+        .diagram-subtitle {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 1rem;
+        }
+
+        .mermaid-controls {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 10;
+            display: flex;
+            gap: 0.5rem;
+            background: rgba(255,255,255,0.95);
+            padding: 0.5rem;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .mermaid-controls button {
+            padding: 0.4rem 0.8rem;
+            border: 1px solid #E5E7EB;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+            color: #374151;
+        }
+
+        .mermaid-controls button:hover {
+            background: #7C3AED;
+            color: white;
+            border-color: #7C3AED;
+        }
+
+        .mermaid-wrapper {
+            width: 100%;
+            min-height: 700px;
+            height: auto;
+            display: block;
+            overflow: auto;
+            cursor: move;
+            padding: 60px;
+            position: relative;
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+        }
+
+        .mermaid {
+            max-width: none !important;
+            width: auto !important;
+            height: auto !important;
+            transition: transform 0.3s ease;
+            display: inline-block !important;
+            min-width: 100% !important;
+        }
+        
+        pre.mermaid {
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            display: inline-block !important;
+            width: auto !important;
+            max-width: none !important;
+        }
+        
+        .mermaid svg {
+            max-width: none !important;
+            width: auto !important;
+            height: auto !important;
+            display: block !important;
+        }
+
+        .diagram-description {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #F3F4F6;
+            border-radius: 6px;
+            color: #6B7280;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
         /* Section Highlighting Styles */
         .markdown-content .section-highlighted {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(29, 78, 216, 0.05));
@@ -746,6 +862,14 @@
                         <h2 class="persona-title">Operations Persona</h2>
                     </div>
                     <div class="feature-grid">
+                        <div class="feature-card" data-file="system-architecture.md">
+                            <div class="feature-name">System Architecture</div>
+                            <div class="feature-description">Complete system diagrams and flows</div>
+                        </div>
+                        <div class="feature-card" data-file="architecture-viewer">
+                            <div class="feature-name">Architecture Viewer</div>
+                            <div class="feature-description">Interactive Mermaid architecture diagrams</div>
+                        </div>
                         <div class="feature-card" data-file="architecture.md">
                             <div class="feature-name">Platform Architecture</div>
                             <div class="feature-description">Kubernetes CRD-based backend design</div>
@@ -790,6 +914,10 @@
                         <div class="feature-card" data-file="ci-cd.md">
                             <div class="feature-name">CI/CD</div>
                             <div class="feature-description">Tekton-based pipeline automation</div>
+                        </div>
+                        <div class="feature-card" data-file="prompt-to-real.md">
+                            <div class="feature-name">Prompt to Real</div>
+                            <div class="feature-description">AI-powered app generation from prompts</div>
                         </div>
                         <div class="feature-card" data-file="converge-app.md">
                             <div class="feature-name">Converge App</div>
@@ -855,7 +983,687 @@
     </div>
 
     <script>
+        // Initialize Mermaid
+        mermaid.initialize({ 
+            startOnLoad: false,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: false,
+                htmlLabels: true,
+                curve: 'basis',
+                diagramPadding: 100,
+                nodeSpacing: 100,
+                rankSpacing: 100
+            },
+            graph: {
+                useMaxWidth: false,
+                diagramPadding: 100,
+                nodeSpacing: 100,
+                rankSpacing: 100
+            },
+            sequence: {
+                useMaxWidth: false,
+                diagramMarginX: 50,
+                diagramMarginY: 50
+            },
+            securityLevel: 'loose',
+            themeVariables: {
+                primaryColor: '#7C3AED',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#5B21B6',
+                lineColor: '#8B5CF6',
+                secondaryColor: '#EC4899',
+                tertiaryColor: '#3B82F6',
+                background: '#F9FAFB',
+                mainBkg: '#7C3AED',
+                secondBkg: '#EC4899',
+                tertiaryBkg: '#3B82F6'
+            }
+        });
+
+        // PanZoom instances storage
+        let panzoomInstances = {};
+
+        // Mermaid diagrams for each feature
+        const mermaidDiagrams = {
+            'system-architecture.md': {
+                architecture: {
+                    code: `graph TB
+    Client[Web Client]
+    API[API Client] 
+    CLI[CLI Tool]
+    FastAPI[FastAPI Server]
+    CORS[CORS Middleware]
+    ACB[AI Converge Builder]
+    DM[Deployment Manager]
+    RM[RAG Manager]
+    CM[Chat Manager]
+    MM[MLflow Manager]
+    CE[Cost Estimator]
+    SSE[SSE Manager]
+    K8S[Kubernetes API]
+    MinIO[MinIO Storage]
+    MLflow[MLflow Server]
+    CRD[Custom Resources]
+    Models[Model Artifacts]
+    Metrics[Experiment Metrics]
+    Logs[Application Logs]
+
+    Client --> FastAPI
+    API --> FastAPI
+    CLI --> FastAPI
+    
+    FastAPI --> CORS
+    CORS --> ACB
+    CORS --> DM
+    CORS --> RM
+    CORS --> CM
+    CORS --> MM
+    CORS --> CE
+    CORS --> SSE
+
+    ACB --> K8S
+    DM --> K8S
+    RM --> K8S
+    RM --> CRD
+    CM --> Models
+    MM --> MLflow
+    CE --> K8S
+
+    K8S --> MinIO
+    MLflow --> Metrics
+    MinIO --> Models
+    K8S --> Logs
+
+    style FastAPI fill:#f9f,stroke:#333,stroke-width:4px
+    style K8S fill:#326ce5,stroke:#333,stroke-width:2px
+    style MinIO fill:#c72e49,stroke:#333,stroke-width:2px
+    style MLflow fill:#0194e2,stroke:#333,stroke-width:2px`,
+                    description: "Complete system overview with all layers and components"
+                },
+                dataflow: {
+                    code: `flowchart LR
+    API[FastAPI Endpoints]
+    CM[Chat Manager]
+    DM[Deployment Manager]
+    RM[RAG Manager]
+    MM[MLflow Manager]
+    Sessions[Session Store]
+    Queue[Task Queue]
+    Cache[Response Cache]
+    K8S[Kubernetes etcd]
+    MinIO[MinIO Object Store]
+    MLflow[MLflow Tracking]
+    Metrics[Prometheus Metrics]
+    Logs[Log Aggregation]
+    Events[Event Stream]
+
+    API --> CM
+    API --> DM
+    API --> RM
+    API --> MM
+
+    CM --> Sessions
+    CM --> Queue
+    CM --> Cache
+
+    DM --> K8S
+    RM --> K8S
+    MM --> MLflow
+
+    Queue --> MinIO
+    Cache --> MinIO
+    K8S --> Metrics
+    MLflow --> Metrics
+
+    Sessions --> Events
+    Queue --> Events
+    Metrics --> Logs
+
+    style API fill:#ff6b6b,stroke:#333,stroke-width:3px
+    style K8S fill:#4ecdc4,stroke:#333,stroke-width:2px
+    style MinIO fill:#45b7d1,stroke:#333,stroke-width:2px
+    style MLflow fill:#f7dc6f,stroke:#333,stroke-width:2px`,
+                    description: "Complete data flow through all system layers"
+                }
+            },
+            'architecture.md': {
+                architecture: {
+                    code: `graph TB
+    Client[Web Client]
+    API[API Client]
+    CLI[CLI Tool]
+    FastAPI[FastAPI Server]
+    CORS[CORS Middleware]
+    ACB[AI Converge Builder]
+    DM[Deployment Manager]
+    RM[RAG Manager]
+    CM[Chat Manager]
+    MM[MLflow Manager]
+    CE[Cost Estimator]
+    SSE[SSE Manager]
+    K8S[Kubernetes API]
+    MinIO[MinIO Storage]
+    MLflow[MLflow Server]
+    CRD[Custom Resources]
+    Models[Model Artifacts]
+    Metrics[Experiment Metrics]
+    Logs[Application Logs]
+
+    Client --> FastAPI
+    API --> FastAPI
+    CLI --> FastAPI
+    
+    FastAPI --> CORS
+    CORS --> ACB
+    CORS --> DM
+    CORS --> RM
+    CORS --> CM
+    CORS --> MM
+    CORS --> CE
+    CORS --> SSE
+
+    ACB --> K8S
+    DM --> K8S
+    RM --> K8S
+    RM --> CRD
+    CM --> Models
+    MM --> MLflow
+    CE --> K8S
+
+    K8S --> MinIO
+    MLflow --> Metrics
+    MinIO --> Models
+    K8S --> Logs
+
+    style FastAPI fill:#f9f,stroke:#333,stroke-width:4px
+    style K8S fill:#326ce5,stroke:#333,stroke-width:2px
+    style MinIO fill:#c72e49,stroke:#333,stroke-width:2px
+    style MLflow fill:#0194e2,stroke:#333,stroke-width:2px`,
+                    description: "Complete system architecture showing client layer, API gateway, core services, infrastructure, and storage components"
+                },
+                dataflow: {
+                    code: `flowchart LR
+    API[FastAPI Endpoints]
+    CM[Chat Manager]
+    DM[Deployment Manager]
+    RM[RAG Manager]
+    MM[MLflow Manager]
+    Sessions[Session Store]
+    Queue[Task Queue]
+    Cache[Response Cache]
+    K8S[Kubernetes etcd]
+    MinIO[MinIO Object Store]
+    MLflow[MLflow Tracking]
+    Metrics[Prometheus Metrics]
+    Logs[Log Aggregation]
+    Events[Event Stream]
+
+    API --> CM
+    API --> DM
+    API --> RM
+    API --> MM
+
+    CM --> Sessions
+    CM --> Queue
+    CM --> Cache
+
+    DM --> K8S
+    RM --> K8S
+    MM --> MLflow
+
+    Queue --> MinIO
+    Cache --> MinIO
+    K8S --> Metrics
+    MLflow --> Metrics
+
+    Sessions --> Events
+    Queue --> Events
+    Metrics --> Logs
+
+    style API fill:#ff6b6b,stroke:#333,stroke-width:3px
+    style K8S fill:#4ecdc4,stroke:#333,stroke-width:2px
+    style MinIO fill:#45b7d1,stroke:#333,stroke-width:2px
+    style MLflow fill:#f7dc6f,stroke:#333,stroke-width:2px`,
+                    description: "Complete data flow through API layer, services, data processing, persistence, and monitoring"
+                }
+            },
+            'workflows.md': {
+                architecture: {
+                    code: `graph TB
+    UI[Visual Designer]
+    PARSER[Parser]
+    VALIDATOR[Validator]
+    SCHEDULER[Scheduler]
+    EXECUTOR[Executor]
+    QUEUE[Task Queue]
+    WORKERS[Workers]
+    STATE[State Manager]
+    
+    UI --> PARSER
+    PARSER --> VALIDATOR
+    VALIDATOR --> SCHEDULER
+    SCHEDULER --> EXECUTOR
+    EXECUTOR --> QUEUE
+    QUEUE --> WORKERS
+    WORKERS --> STATE`,
+                    description: "Workflow engine architecture from design to execution"
+                },
+                dataflow: {
+                    code: `flowchart LR
+    TRIGGER[Trigger]
+    WF[Workflow]
+    N1[Node 1]
+    N2[Node 2]
+    N3[Node 3]
+    OUTPUT[Output]
+    LOGS[Logs]
+    METRICS[Metrics]
+    
+    TRIGGER --> WF
+    WF --> N1
+    N1 --> N2
+    N2 --> N3
+    N3 --> OUTPUT
+    N1 --> LOGS
+    N2 --> METRICS`,
+                    description: "Workflow execution data flow with logging and metrics"
+                }
+            },
+            'federated-learning.md': {
+                architecture: {
+                    code: `graph TB
+    GLOBAL[Global Model]
+    COORD[Coordinator]
+    C1[Client 1]
+    C2[Client 2]
+    C3[Client 3]
+    ENC[Encryption]
+    AGG[Aggregator]
+    
+    GLOBAL --> COORD
+    COORD --> C1
+    COORD --> C2
+    COORD --> C3
+    C1 --> ENC
+    C2 --> ENC
+    C3 --> ENC
+    ENC --> AGG
+    AGG --> GLOBAL`,
+                    description: "Federated learning architecture with secure aggregation"
+                },
+                dataflow: {
+                    code: `flowchart LR
+    INIT[Initialize]
+    SELECT[Select Clients]
+    DIST[Distribute Model]
+    LOCAL[Local Training]
+    ENCRYPT[Encrypt Updates]
+    AGGREGATE[Aggregate]
+    UPDATE[Update Global]
+    
+    INIT --> SELECT
+    SELECT --> DIST
+    DIST --> LOCAL
+    LOCAL --> ENCRYPT
+    ENCRYPT --> AGGREGATE
+    AGGREGATE --> UPDATE
+    UPDATE --> INIT`,
+                    description: "Federated learning training round data flow"
+                }
+            },
+            'rag-chat.md': {
+                architecture: {
+                    code: `graph LR
+    Query[User Query]
+    Embedder[Text Embedder]
+    VectorDB[Vector Database]
+    Retriever[Document Retriever]
+    Context[Context Builder]
+    LLM[Language Model]
+    Response[Generated Response]
+    RAGManager[RAG Manager]
+    K8SCRD[Kubernetes CRD]
+    Storage[MinIO Storage]
+
+    Query --> Embedder
+    Embedder --> VectorDB
+    VectorDB --> Retriever
+    Retriever --> Context
+    Context --> LLM
+    LLM --> Response
+
+    RAGManager --> K8SCRD
+    K8SCRD --> VectorDB
+    K8SCRD --> Storage
+    Storage --> LLM
+
+    style Query fill:#ffd700,stroke:#333,stroke-width:2px
+    style Response fill:#90ee90,stroke:#333,stroke-width:2px
+    style LLM fill:#87ceeb,stroke:#333,stroke-width:2px
+    style VectorDB fill:#dda0dd,stroke:#333,stroke-width:2px`,
+                    description: "Complete RAG system architecture with input processing, retrieval, generation, and infrastructure layers"
+                },
+                dataflow: {
+                    code: `flowchart LR
+    USER[User Query]
+    EMBED[Embed Query]
+    SIMILARITY[Search]
+    RETRIEVE[Retrieve Docs]
+    CONTEXT[Build Context]
+    GENERATE[Generate Response]
+    CITE[Add Citations]
+    RESPONSE[Response]
+    
+    USER --> EMBED
+    EMBED --> SIMILARITY
+    SIMILARITY --> RETRIEVE
+    RETRIEVE --> CONTEXT
+    CONTEXT --> GENERATE
+    GENERATE --> CITE
+    CITE --> RESPONSE`,
+                    description: "RAG query processing flow from user input to response"
+                }
+            },
+            'ai-catalog.md': {
+                architecture: {
+                    code: `graph TB
+    REG[Model Registry]
+    ART[Artifact Store]
+    META[Metadata Service]
+    VER[Version Control]
+    PUB[Publishing]
+    DISC[Discovery]
+    RATE[Rating System]
+    S3[(S3 Storage)]
+    DB[(Metadata DB)]
+    CACHE[(Redis Cache)]
+    
+    REG --> META
+    ART --> VER
+    META --> DB
+    VER --> DB
+    PUB --> REG
+    DISC --> CACHE
+    RATE --> DB
+    ART --> S3`,
+                    description: "AI Catalog architecture with marketplace and storage layers"
+                },
+                dataflow: {
+                    code: `flowchart LR
+    CREATE[Create Model]
+    TRAIN[Train]
+    VALIDATE[Validate]
+    PACKAGE[Package]
+    UPLOAD[Upload to Catalog]
+    TAG[Add Metadata]
+    PUBLISH[Publish]
+    SEARCH[Search]
+    DEPLOY[Deploy]
+    
+    CREATE --> TRAIN
+    TRAIN --> VALIDATE
+    VALIDATE --> PACKAGE
+    PACKAGE --> UPLOAD
+    UPLOAD --> TAG
+    TAG --> PUBLISH
+    PUBLISH --> SEARCH
+    SEARCH --> DEPLOY`,
+                    description: "Model lifecycle flow through the AI Catalog"
+                }
+            },
+            'monitoring.md': {
+                architecture: {
+                    code: `graph TB
+    METRICS[Metrics]
+    LOGS[Logs]
+    TRACES[Traces]
+    PIPE[Pipeline]
+    ENRICH[Enrichment]
+    DETECT[Anomaly Detection]
+    TSDB[(Time Series DB)]
+    LOGDB[(Log Storage)]
+    DASH[Dashboards]
+    ALERT[Alerts]
+    REPORT[Reports]
+    
+    METRICS --> PIPE
+    LOGS --> PIPE
+    TRACES --> PIPE
+    PIPE --> ENRICH
+    ENRICH --> DETECT
+    DETECT --> TSDB
+    DETECT --> LOGDB
+    TSDB --> DASH
+    LOGDB --> REPORT
+    DETECT --> ALERT`,
+                    description: "Monitoring stack with telemetry collection and visualization"
+                },
+                dataflow: {
+                    code: `flowchart LR
+    APP[Applications]
+    INFRA[Infrastructure]
+    AGENT[Agents]
+    EXPORT[Exporters]
+    INGEST[Ingestion]
+    TRANSFORM[Transform]
+    ANALYZE[Analyze]
+    ALERT[Alert]
+    VISUAL[Visualize]
+    
+    APP --> AGENT
+    INFRA --> AGENT
+    AGENT --> EXPORT
+    EXPORT --> INGEST
+    INGEST --> TRANSFORM
+    TRANSFORM --> ANALYZE
+    ANALYZE --> ALERT
+    ANALYZE --> VISUAL`,
+                    description: "Telemetry data flow from sources to visualization"
+                }
+            },
+            'deployments.md': {
+                architecture: {
+                    code: `sequenceDiagram
+    participant User
+    participant FastAPI
+    participant DeploymentManager
+    participant Kubernetes
+    participant MinIO
+    participant Pod
+
+    User->>FastAPI: POST /deployments
+    FastAPI->>DeploymentManager: create_deployment()
+    DeploymentManager->>Kubernetes: Create Deployment
+    Kubernetes->>Pod: Schedule Pod
+    Pod->>MinIO: Pull Model Artifacts
+    MinIO-->>Pod: Model Data
+    Pod-->>Kubernetes: Running Status
+    Kubernetes-->>DeploymentManager: Deployment Created
+    DeploymentManager-->>FastAPI: DeploymentResponse
+    FastAPI-->>User: 200 OK + Deployment Details
+
+    Note over User,Pod: Deployment Update Flow
+    User->>FastAPI: PUT /deployments/{deployment_id}
+    FastAPI->>DeploymentManager: update_deployment()
+    DeploymentManager->>Kubernetes: Update Deployment
+    Kubernetes->>Pod: Rolling Update
+    Pod-->>Kubernetes: Update Complete
+    Kubernetes-->>DeploymentManager: Update Success
+    DeploymentManager-->>FastAPI: Updated Details
+    FastAPI-->>User: 200 OK`,
+                    description: "Complete deployment sequence diagram showing create and update flows through the system"
+                },
+                dataflow: {
+                    code: `flowchart LR
+    CODE[Code Commit]
+    TEST[Test]
+    BUILD[Build]
+    SCAN[Security Scan]
+    VALIDATE[Validate]
+    DEPLOY[Deploy]
+    VERIFY[Health Check]
+    ROUTE[Route Traffic]
+    MONITOR[Monitor]
+    
+    CODE --> TEST
+    TEST --> BUILD
+    BUILD --> SCAN
+    SCAN --> VALIDATE
+    VALIDATE --> DEPLOY
+    DEPLOY --> VERIFY
+    VERIFY --> ROUTE
+    ROUTE --> MONITOR`,
+                    description: "CI/CD pipeline flow from code to production"
+                }
+            },
+            'agentic-ai.md': {
+                architecture: {
+                    code: `graph TB
+    TASK[Task Agents]
+    KNOW[Knowledge Agents]
+    EXEC[Execution Agents]
+    COORD[Coordinator]
+    SCHED[Scheduler]
+    COMM[Communication Bus]
+    SAND[Sandboxes]
+    TOOLS[Tool Registry]
+    STATE[State Manager]
+    
+    TASK --> COORD
+    KNOW --> COORD
+    EXEC --> COORD
+    COORD --> SCHED
+    SCHED --> COMM
+    COMM --> SAND
+    SAND --> TOOLS
+    TOOLS --> STATE`,
+                    description: "Multi-agent system architecture with orchestration layer"
+                },
+                dataflow: {
+                    code: `flowchart LR
+    GOAL[Goal Input]
+    PLAN[Planning Agent]
+    DECOMP[Task Decomposition]
+    ASSIGN[Agent Assignment]
+    EXEC[Parallel Execution]
+    COLLECT[Result Collection]
+    COMBINE[Combine Results]
+    OUTPUT[Final Output]
+    
+    GOAL --> PLAN
+    PLAN --> DECOMP
+    DECOMP --> ASSIGN
+    ASSIGN --> EXEC
+    EXEC --> COLLECT
+    COLLECT --> COMBINE
+    COMBINE --> OUTPUT`,
+                    description: "Agent workflow from goal to completion"
+                }
+            },
+            'prompt-to-real.md': {
+                architecture: {
+                    code: `graph TB
+    User[User Interface]
+    Prompt[Prompt Input]
+    API[FastAPI Server]
+    Builder[AI Converge Builder]
+    Claude[Claude Coding Agent]
+    K8sJob[Kubernetes Job]
+    Docker[Docker Build]
+    Registry[Container Registry]
+    Deploy[Deployment Manager]
+    K8sDeploy[K8s Deployment]
+    Service[Service/Ingress]
+    App[Running Application]
+
+    User --> Prompt
+    Prompt --> API
+    API --> Builder
+    Builder --> K8sJob
+    K8sJob --> Claude
+    Claude --> Docker
+    Docker --> Registry
+    Registry --> Deploy
+    Deploy --> K8sDeploy
+    K8sDeploy --> Service
+    Service --> App
+
+    style User fill:#ffd700,stroke:#333,stroke-width:2px
+    style Claude fill:#8b5cf6,stroke:#333,stroke-width:2px
+    style App fill:#90ee90,stroke:#333,stroke-width:2px
+    style K8sJob fill:#87ceeb,stroke:#333,stroke-width:2px`,
+                    description: "Complete Prompt to Real architecture from user input to deployed application"
+                },
+                dataflow: {
+                    code: `sequenceDiagram
+    participant U as User
+    participant F as Frontend
+    participant A as API
+    participant B as Builder
+    participant C as Claude
+    participant K as K8s Job
+    participant D as Docker
+    participant R as Registry
+    participant Dep as Deploy
+
+    U->>F: Enter prompt
+    F->>A: POST /ai-converge-builder
+    A->>B: Create job request
+    B->>K: Create K8s job
+    K->>K: Status: initializing
+    K->>C: Generate code
+    C->>C: Process prompt
+    C->>K: Code generated
+    K->>K: Status: building
+    K->>D: Build image
+    D->>R: Push image
+    R-->>K: Image ready
+    K->>K: Status: deploying
+    K->>Dep: Deploy app
+    Dep->>K: App deployed
+    K->>K: Status: complete
+    K-->>A: Job complete
+    A-->>F: App URL
+    F-->>U: Show app`,
+                    description: "Detailed sequence flow of application generation from prompt to deployment"
+                }
+            },
+            'default': {
+                architecture: {
+                    code: `graph TB
+    UI[User Interface]
+    API[API Gateway]
+    AUTH[Authentication]
+    SVC[Services]
+    DB[(Database)]
+    CACHE[(Cache)]
+    
+    UI --> API
+    API --> AUTH
+    AUTH --> SVC
+    SVC --> DB
+    SVC --> CACHE`,
+                    description: "Generic system architecture"
+                },
+                dataflow: {
+                    code: `flowchart LR
+    INPUT[Input]
+    PROCESS[Process]
+    TRANSFORM[Transform]
+    OUTPUT[Output]
+    
+    INPUT --> PROCESS
+    PROCESS --> TRANSFORM
+    TRANSFORM --> OUTPUT`,
+                    description: "Generic data flow pattern"
+                }
+            }
+        };
+
         const features = {
+            'system-architecture.md': { title: 'System Architecture', persona: 'operations', x: 50, y: 350 },
+            'architecture-viewer': { title: 'Architecture Viewer', persona: 'operations', x: 250, y: 350, external: 'tmp/architecture/index.html' },
             'ai-catalog.md': { title: 'AI Catalog', persona: 'data-science', x: 200, y: 100 },
             'ai-catalog-artifacts.md': { title: 'AI Catalog Artifacts', persona: 'data-science', x: 400, y: 100 },
             'agentic-ai.md': { title: 'Agentic AI', persona: 'data-science', x: 600, y: 100 },
@@ -873,6 +1681,7 @@
             'monitoring.md': { title: 'Monitoring', persona: 'business', x: 400, y: 500 },
             'cost-center.md': { title: 'Cost Center', persona: 'business', x: 600, y: 500 },
             'ci-cd.md': { title: 'CI/CD', persona: 'business', x: 800, y: 500 },
+            'prompt-to-real.md': { title: 'Prompt to Real', persona: 'business', x: 900, y: 500 },
             'converge-app.md': { title: 'Converge App', persona: 'business', x: 1000, y: 500 },
             'admin-dashboard.md': { title: 'Admin Dashboard', persona: 'administrative', x: 300, y: 650 },
             'user-management.md': { title: 'User Management', persona: 'administrative', x: 500, y: 650 },
@@ -889,6 +1698,7 @@
             ['federated-learning.md', 'workflows.md'],
 
             // Operations internal connections
+            ['system-architecture.md', 'architecture-viewer'],
             ['architecture.md', 'ai-zones.md'],
             ['architecture.md', 'deployments.md'],
             ['ai-zones.md', 'deployments.md'],
@@ -1194,12 +2004,34 @@
             document.getElementById('tocContent').innerHTML = '<div class="toc-empty">Loading table of contents...</div>';
             document.getElementById('featureModal').style.display = 'block';
 
+            // Check if this is an external HTML file
+            if (feature.external) {
+                // For external HTML files, load in an iframe
+                document.getElementById('modalBody').innerHTML = `
+                    <iframe src="${feature.external}" 
+                        style="width: 100%; height: 80vh; border: none; border-radius: 8px;"
+                        title="${feature.title}">
+                    </iframe>
+                `;
+                // No TOC for external HTML
+                document.getElementById('tocContent').innerHTML = '<div class="toc-empty">External content</div>';
+                return;
+            }
+
             try {
                 const response = await fetch(filename);
                 const markdown = await response.text();
 
                 // Generate TOC from markdown
                 const toc = generateTOC(markdown);
+                
+                // Add diagrams section to TOC at the beginning
+                toc.unshift({
+                    level: 1,
+                    title: 'System Diagrams',
+                    id: 'system-diagrams',
+                    line: -1
+                });
 
                 // Parse markdown to HTML
                 const html = marked.parse(markdown);
@@ -1207,14 +2039,79 @@
                 // Add IDs to headings
                 const htmlWithIds = addHeadingIds(html, toc);
 
+                // Add diagrams section at the beginning of the content
+                const diagramsHtml = generateDiagramsSection(filename);
+                const fullContent = diagramsHtml + htmlWithIds;
+                
                 // Update content
-                document.getElementById('modalBody').innerHTML = htmlWithIds;
+                document.getElementById('modalBody').innerHTML = fullContent;
                 document.getElementById('tocContent').innerHTML = renderTOC(toc);
 
                 // Apply syntax highlighting to code blocks
                 document.querySelectorAll('pre code').forEach((block) => {
                     Prism.highlightElement(block);
                 });
+                
+                // Render Mermaid diagrams with proper sizing
+                setTimeout(async () => {
+                    try {
+                        // Get all mermaid elements
+                        const mermaidElements = document.querySelectorAll('.mermaid, pre.mermaid');
+                        
+                        for (const element of mermaidElements) {
+                            const content = element.textContent || element.innerText;
+                            if (content && content.trim()) {
+                                const id = 'mermaid-' + Math.random().toString(36).substr(2, 9);
+                                
+                                // Clear element
+                                element.textContent = '';
+                                element.removeAttribute('data-processed');
+                                
+                                try {
+                                    // Render the diagram
+                                    const { svg } = await mermaid.render(id, content.trim());
+                                    
+                                    // Insert the SVG
+                                    element.innerHTML = svg;
+                                    
+                                    // Get the inserted SVG element
+                                    const svgElement = element.querySelector('svg');
+                                    if (svgElement) {
+                                        // Remove any width/height restrictions
+                                        svgElement.removeAttribute('width');
+                                        svgElement.removeAttribute('height');
+                                        svgElement.style.maxWidth = 'none';
+                                        svgElement.style.width = 'auto';
+                                        svgElement.style.height = 'auto';
+                                        
+                                        // Get the actual bounds of the content
+                                        const bbox = svgElement.getBBox();
+                                        const padding = 50;
+                                        
+                                        // Set proper viewBox to include all content
+                                        svgElement.setAttribute('viewBox', 
+                                            `${bbox.x - padding} ${bbox.y - padding} ${bbox.width + padding * 2} ${bbox.height + padding * 2}`);
+                                        
+                                        // Set explicit dimensions based on content
+                                        svgElement.setAttribute('width', bbox.width + padding * 2);
+                                        svgElement.setAttribute('height', bbox.height + padding * 2);
+                                    }
+                                } catch (e) {
+                                    console.error('Error rendering diagram:', e);
+                                    element.innerHTML = '<div style="color: red; padding: 20px;">Error rendering diagram. Please check syntax.</div>';
+                                }
+                            }
+                        }
+                        
+                        // Initialize panzoom after diagrams are rendered
+                        setTimeout(() => {
+                            initializePanzoom('architecture');
+                            initializePanzoom('dataflow');
+                        }, 500);
+                    } catch (err) {
+                        console.error('Mermaid rendering error:', err);
+                    }
+                }, 300);
 
                 // Add scroll listener for active TOC item
                 const modalBody = document.getElementById('modalBody');
@@ -1233,6 +2130,138 @@
 
         function closeModal() {
             document.getElementById('featureModal').style.display = 'none';
+            // Dispose panzoom instances
+            Object.values(panzoomInstances).forEach(instance => {
+                if (instance && instance.dispose) {
+                    instance.dispose();
+                }
+            });
+            panzoomInstances = {};
+        }
+
+        // Generate diagrams section HTML
+        function generateDiagramsSection(filename) {
+            const diagrams = mermaidDiagrams[filename] || mermaidDiagrams['default'];
+            
+            let html = `
+                <div class="diagram-section">
+                    <h1 id="system-diagrams" style="color: #1E40AF; font-size: 2rem; border-bottom: 2px solid #3B82F6; padding-bottom: 0.5rem; background: linear-gradient(135deg, #3B82F6, #1D4ED8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">System Diagrams</h1>
+                    
+                    <div class="diagram-container">
+                        <h3 class="diagram-subtitle">Architecture Diagram</h3>
+                        <div class="mermaid-controls">
+                            <button onclick="zoomIn('architecture')">Zoom In</button>
+                            <button onclick="zoomOut('architecture')">Zoom Out</button>
+                            <button onclick="resetZoom('architecture')">Reset</button>
+                            <button onclick="fitToScreen('architecture')">Fit</button>
+                        </div>
+                        <div class="mermaid-wrapper" id="architecture-wrapper">
+                            <pre class="mermaid" id="architecture-diagram">
+${diagrams.architecture.code}
+                            </pre>
+                        </div>
+                        <div class="diagram-description">${diagrams.architecture.description}</div>
+                    </div>
+                    
+                    <div class="diagram-container">
+                        <h3 class="diagram-subtitle">Data Flow Diagram</h3>
+                        <div class="mermaid-controls">
+                            <button onclick="zoomIn('dataflow')">Zoom In</button>
+                            <button onclick="zoomOut('dataflow')">Zoom Out</button>
+                            <button onclick="resetZoom('dataflow')">Reset</button>
+                            <button onclick="fitToScreen('dataflow')">Fit</button>
+                        </div>
+                        <div class="mermaid-wrapper" id="dataflow-wrapper">
+                            <pre class="mermaid" id="dataflow-diagram">
+${diagrams.dataflow.code}
+                            </pre>
+                        </div>
+                        <div class="diagram-description">${diagrams.dataflow.description}</div>
+                    </div>
+                </div>
+            `;
+            
+            return html;
+        }
+
+        // Initialize PanZoom for a diagram
+        function initializePanzoom(type) {
+            if (panzoomInstances[type]) return;
+            
+            // Wait for Mermaid to render the SVG
+            const container = document.querySelector(`#${type}-diagram`);
+            if (!container) return;
+            
+            // Check if container is the pre element, get the SVG inside
+            let svg = container.querySelector('svg');
+            if (!svg && container.tagName === 'PRE') {
+                // After mermaid processes, it should be replaced with SVG
+                const wrapper = container.parentElement;
+                svg = wrapper.querySelector('svg');
+            }
+            
+            if (!svg) {
+                console.log(`SVG not found for ${type} diagram, retrying...`);
+                setTimeout(() => initializePanzoom(type), 500);
+                return;
+            }
+            
+            try {
+                panzoomInstances[type] = panzoom(svg, {
+                    maxZoom: 5,
+                    minZoom: 0.3,
+                    initialZoom: 1,
+                    bounds: false,
+                    smoothScroll: false,
+                    beforeWheel: function(e) {
+                        return !e.ctrlKey;
+                    }
+                });
+            } catch (e) {
+                console.error('Error initializing panzoom:', e);
+            }
+        }
+
+        // Zoom controls
+        function zoomIn(type) {
+            if (panzoomInstances[type]) {
+                panzoomInstances[type].smoothZoom(0, 0, 1.2);
+            }
+        }
+
+        function zoomOut(type) {
+            if (panzoomInstances[type]) {
+                panzoomInstances[type].smoothZoom(0, 0, 0.8);
+            }
+        }
+
+        function resetZoom(type) {
+            if (panzoomInstances[type]) {
+                panzoomInstances[type].moveTo(0, 0);
+                panzoomInstances[type].zoomAbs(0, 0, 1);
+            }
+        }
+
+        function fitToScreen(type) {
+            if (panzoomInstances[type]) {
+                const container = document.getElementById(type + '-wrapper');
+                const diagramContainer = document.querySelector(`#${type}-diagram`);
+                const svg = diagramContainer ? diagramContainer.querySelector('svg') : null;
+                
+                if (!container || !svg) return;
+                
+                const containerWidth = container.clientWidth;
+                const containerHeight = container.clientHeight;
+                const diagramWidth = svg.scrollWidth || svg.clientWidth;
+                const diagramHeight = svg.scrollHeight || svg.clientHeight;
+                
+                const scaleX = containerWidth / diagramWidth;
+                const scaleY = containerHeight / diagramHeight;
+                const scale = Math.min(scaleX, scaleY, 1) * 0.9;
+                
+                panzoomInstances[type].moveTo(0, 0);
+                panzoomInstances[type].zoomAbs(0, 0, scale);
+            }
         }
 
         // Search functionality

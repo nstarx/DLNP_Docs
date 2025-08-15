@@ -1,0 +1,65 @@
+graph TB
+    subgraph "Client Layer"
+        Client[Web Client]
+        API[API Client]
+        CLI[CLI Tool]
+    end
+
+    subgraph "API Gateway"
+        FastAPI[FastAPI Server]
+        CORS[CORS Middleware]
+    end
+
+    subgraph "Core Services"
+        ACB[AI Converge Builder]
+        DM[Deployment Manager]
+        RM[RAG Manager]
+        CM[Chat Manager]
+        MM[MLflow Manager]
+        CE[Cost Estimator]
+        SSE[SSE Manager]
+    end
+
+    subgraph "Infrastructure Layer"
+        K8S[Kubernetes API]
+        MinIO[MinIO Storage]
+        MLflow[MLflow Server]
+        CRD[Custom Resources]
+    end
+
+    subgraph "Storage"
+        Models[Model Artifacts]
+        Metrics[Experiment Metrics]
+        Logs[Application Logs]
+    end
+
+    Client --> FastAPI
+    API --> FastAPI
+    CLI --> FastAPI
+    
+    FastAPI --> CORS
+    CORS --> ACB
+    CORS --> DM
+    CORS --> RM
+    CORS --> CM
+    CORS --> MM
+    CORS --> CE
+    CORS --> SSE
+
+    ACB --> K8S
+    DM --> K8S
+    RM --> K8S
+    RM --> CRD
+    CM --> Models
+    MM --> MLflow
+    CE --> K8S
+
+    K8S --> MinIO
+    MLflow --> Metrics
+    MinIO --> Models
+    K8S --> Logs
+
+    style FastAPI fill:#f9f,stroke:#333,stroke-width:4px
+    style K8S fill:#326ce5,stroke:#333,stroke-width:2px
+    style MinIO fill:#c72e49,stroke:#333,stroke-width:2px
+    style MLflow fill:#0194e2,stroke:#333,stroke-width:2px

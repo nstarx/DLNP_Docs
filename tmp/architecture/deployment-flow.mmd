@@ -1,0 +1,28 @@
+sequenceDiagram
+    participant User
+    participant FastAPI
+    participant DeploymentManager
+    participant Kubernetes
+    participant MinIO
+    participant Pod
+
+    User->>FastAPI: POST /deployments
+    FastAPI->>DeploymentManager: create_deployment()
+    DeploymentManager->>Kubernetes: Create Deployment
+    Kubernetes->>Pod: Schedule Pod
+    Pod->>MinIO: Pull Model Artifacts
+    MinIO-->>Pod: Model Data
+    Pod-->>Kubernetes: Running Status
+    Kubernetes-->>DeploymentManager: Deployment Created
+    DeploymentManager-->>FastAPI: DeploymentResponse
+    FastAPI-->>User: 200 OK + Deployment Details
+
+    Note over User,Pod: Deployment Update Flow
+    User->>FastAPI: PUT /deployments/{deployment_id}
+    FastAPI->>DeploymentManager: update_deployment()
+    DeploymentManager->>Kubernetes: Update Deployment
+    Kubernetes->>Pod: Rolling Update
+    Pod-->>Kubernetes: Update Complete
+    Kubernetes-->>DeploymentManager: Update Success
+    DeploymentManager-->>FastAPI: Updated Details
+    FastAPI-->>User: 200 OK
